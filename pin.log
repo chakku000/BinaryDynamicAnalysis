@@ -1,0 +1,3 @@
+Pin 3.2 kit 81201
+E:  main_enter_exit.cpp:26 cannot insert IPOINT_AFTER on an instruction without a fall-through path
+     373 0x0000561ddc21366a ret 
