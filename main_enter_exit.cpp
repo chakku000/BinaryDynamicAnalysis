@@ -5,6 +5,11 @@
 #include <iostream>
 #include <fstream>
 
+VOID ReturnFromMain()
+{
+    std::cerr << "Return from main" << std::endl;
+}
+
 VOID Trace(TRACE trace, VOID *v)
 {
     for(BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
@@ -17,7 +22,7 @@ VOID Trace(TRACE trace, VOID *v)
                 if(RTN_Valid(rtn)){
                     std::string routine_name = RTN_Name(rtn);
                     if(routine_name == "main"){ // The routine is main
-                        std::cerr << "Return from main" << std::endl;
+                        INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)ReturnFromMain,IARG_CALL_ORDER,CALL_ORDER_LAST,IARG_END);
                     }
                 }
             }
@@ -37,7 +42,7 @@ VOID Image(IMG img,VOID *v)
     RTN rtn = RTN_FindByName(img,"main");
     if(RTN_Valid(rtn)){
         RTN_Open(rtn);
-        RTN_InsertCall(rtn,IPOINT_BEFORE,(AFUNPTR)MainEntrance,IARG_END);
+        RTN_InsertCall(rtn,IPOINT_BEFORE,(AFUNPTR)MainEntrance,IARG_CALL_ORDER,CALL_ORDER_FIRST,IARG_END);
         RTN_Close(rtn);
     }
 }
