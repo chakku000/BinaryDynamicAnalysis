@@ -23,10 +23,12 @@ struct Return_VC{
 
 Return_VC* sthread_create(Pass_FuncPtr_FuncArgs_VC* obj){
     int vc = obj->vc;
+    // update (C_u = max(C_u , C_t = obj->vc)) 
     vc++;
     void* ret = ((void* (*)(void*))(obj->func_ptr))(obj->args);
     delete obj;
     Return_VC *retobj =  new Return_VC(ret,vc);
+    // inc_u (C_u)
     return retobj;
 }
 
@@ -70,9 +72,10 @@ int Replace_PthreadJoin(CONTEXT* context,AFUNPTR orgFuncptr,
             PIN_PARG(pthread_t),th,
             PIN_PARG(void**),&retval,
             PIN_PARG_END());
-    //printf("void** args = %p\n",args);
     (*args) = retval->ret;
     std::cout << retval->vc << std::endl;
+
+    // update C_t = max(C_t,C_u = retval->vc)
     return ret;
 }
 
