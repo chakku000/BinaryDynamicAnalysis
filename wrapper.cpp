@@ -20,7 +20,7 @@ void* sthread_create(Pass_FuncPtr_FuncArgs_VC* obj){
     printf("obj->func_ptr : %p\n",obj->func_ptr);
     void* ret = ((void* (*)(void*))(obj->func_ptr))(obj->args);
     delete obj;
-    std::cout << "ret = " << (intptr_t)ret << std::endl;
+    std::cout << "ret = " << reinterpret_cast<intptr_t>(ret) << std::endl;
     return ret;
 }
 
