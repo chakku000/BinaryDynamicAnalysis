@@ -8,6 +8,7 @@ int thread_start(){
 }
 
 int main(){
+    printf("thread_start = %p\n",thread_start);
     pthread_t thread;
     pthread_create(&thread,NULL,(void*)thread_start,NULL);
     sleep(2);
