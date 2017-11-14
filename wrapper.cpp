@@ -1,21 +1,47 @@
 #include <iostream>
 #include <cstdio>
 #include <fstream>
+#include <cstdint>
 #include <pthread.h>
 
 #include "pin.H"
 
-void sthread_create(int v){
-    std::cout << "sthread_create : "  << v << std::endl;
+using VectorClock = uint32_t;
+
+struct Pass_FuncPtr_FuncArgs_VC{
+    void* func_ptr;
+    void* args;
+    int vc;
+    Pass_FuncPtr_FuncArgs_VC(void* a,void* b,int c) : func_ptr(a) , args(b) , vc(c) {}
+};
+
+struct A{
+    int x,y,z;
+    A(int a,int b,int c):x(a),y(b),z(c){}
+};
+
+int sthread_create(void* obj){
+    printf("&obj = %p\n",&obj);
+    printf("obj = %p\n",obj);
+
+    A *a = (A*)obj;
+
+    std::cout << "a->x : " << (a->x) << std::endl;
+    std::cout << "a->y : " << (a->y) << std::endl;
+    std::cout << "a->z : " << (a->z) << std::endl;
+
+    delete a;
+    return 2;
 }
 
 // orgFuncptr : pthread_createへのポインタ
-int Replace_PthreadCreate(CONTEXT* context, AFUNPTR orgFuncptr, pthread_t* thread, const pthread_attr_t* attr, void* fun_ptr,void* arg)
+int Replace_PthreadCreate(CONTEXT* context, AFUNPTR orgFuncptr, pthread_t* thread, const pthread_attr_t* attr, void* func_ptr,void* args)
 {
     int ret;
-
-    std::pair<void*,int> vc;
-
+    //Pass_FuncPtr_FuncArgs_VC x(func_ptr,args,10);
+    //printf("&x = %p\n",&x);
+    A *a = new A(1,2,3);
+    printf("&a = %p\n",&a);
     PIN_CallApplicationFunction(
         context,PIN_ThreadId(),CALLINGSTD_DEFAULT,
         orgFuncptr,NULL,
@@ -23,7 +49,7 @@ int Replace_PthreadCreate(CONTEXT* context, AFUNPTR orgFuncptr, pthread_t* threa
         PIN_PARG(pthread_t*),thread,
         PIN_PARG(pthread_attr_t*),attr,
         PIN_PARG(void*), sthread_create,
-        PIN_PARG(void*),10,
+        PIN_PARG(void*),(void*)a,
         PIN_PARG_END());
 
     return ret;
