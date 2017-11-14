@@ -26,12 +26,11 @@ int sthread_create(void* obj){
 
     A *a = (A*)obj;
 
-    //Pass_FuncPtr_FuncArgs_VC* args = (Pass_FuncPtr_FuncArgs_VC*)obj;
-    //VectorClock vc = args->vc;
     std::cout << "a->x : " << (a->x) << std::endl;
     std::cout << "a->y : " << (a->y) << std::endl;
     std::cout << "a->z : " << (a->z) << std::endl;
-    //func(arg);
+
+    delete a;
     return 2;
 }
 
@@ -41,7 +40,7 @@ int Replace_PthreadCreate(CONTEXT* context, AFUNPTR orgFuncptr, pthread_t* threa
     int ret;
     //Pass_FuncPtr_FuncArgs_VC x(func_ptr,args,10);
     //printf("&x = %p\n",&x);
-    A a(1,2,3);
+    A *a = new A(1,2,3);
     printf("&a = %p\n",&a);
     PIN_CallApplicationFunction(
         context,PIN_ThreadId(),CALLINGSTD_DEFAULT,
@@ -50,7 +49,7 @@ int Replace_PthreadCreate(CONTEXT* context, AFUNPTR orgFuncptr, pthread_t* threa
         PIN_PARG(pthread_t*),thread,
         PIN_PARG(pthread_attr_t*),attr,
         PIN_PARG(void*), sthread_create,
-        PIN_PARG(void*),&a,
+        PIN_PARG(void*),(void*)a,
         PIN_PARG_END());
 
     return ret;
