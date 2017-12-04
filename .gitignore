@@ -1,2 +1,4 @@
 *.out
 obj-intel64/
+*.txt
+*.bmp
