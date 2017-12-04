@@ -2,3 +2,5 @@
 obj-intel64/
 *.txt
 *.bmp
+*.log
+out*
